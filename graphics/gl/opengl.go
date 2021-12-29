@@ -20,12 +20,14 @@ func GlInit() error {
 		return err
 	}
 
+	gl.GenVertexArrays(MaxVAO, &vaoIDs[0])
+
 	return nil
 }
 
 func GetFreeVAOIId() (uint32, error) {
 	for i, used := range vaoUsed {
-		if used {
+		if !used {
 			vaoUsed[i] = true
 			return vaoIDs[i], nil
 		}

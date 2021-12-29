@@ -24,7 +24,9 @@ func CreateProgram(Id uint32) *Program {
 	}
 
 	return &Program{
-		Id: Id,
+		Id:         Id,
+		uniforms:   make(map[string]*Uniform),
+		attributes: make(map[string]uint32),
 	}
 }
 

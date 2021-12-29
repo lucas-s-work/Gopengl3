@@ -1,6 +1,8 @@
 package gl
 
-import "github.com/go-gl/glfw/v3.2/glfw"
+import (
+	"github.com/go-gl/glfw/v3.2/glfw"
+)
 
 type Window struct {
 	glWindow      *glfw.Window
@@ -46,6 +48,10 @@ func (w *Window) Destroy() {
 
 func (w *Window) SwapBuffers() {
 	w.glWindow.SwapBuffers()
+}
+
+func (w *Window) PollInput() {
+	glfw.PollEvents()
 }
 
 func (w *Window) ShouldClose() bool {
