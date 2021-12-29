@@ -37,7 +37,7 @@ var (
 	loadedShaders = map[string]*shader{}
 )
 
-func (p *Program) loadShader(loc string, shaderType uint32) error {
+func (p *Program) LoadShader(loc string, shaderType uint32) error {
 	// If shader reused and already loaded then just use that
 	if s, ok := loadedShaders[loc]; ok {
 		p.AttachShader(s)

@@ -4,6 +4,7 @@ import (
 	"runtime"
 
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
+	"github.com/lucas-s-work/gopengl3/graphics/renderers"
 )
 
 func init() {
@@ -19,4 +20,6 @@ func main() {
 	if err := gl.GlInit(); err != nil {
 		panic(err)
 	}
+
+	renderers.CreateRotationRenderer()
 }
