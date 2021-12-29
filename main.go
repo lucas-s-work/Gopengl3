@@ -11,7 +11,7 @@ func init() {
 }
 
 func main() {
-	window, err := gl.CreateWindow(800, 600, "test")
+	_, err := gl.CreateWindow(800, 600, "test")
 	if err != nil {
 		panic(err)
 	}

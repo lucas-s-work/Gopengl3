@@ -15,7 +15,7 @@ type shader struct {
 type Program struct {
 	Id         uint32
 	uniforms   map[string]*Uniform
-	attributes map[string]int32
+	attributes map[string]uint32
 }
 
 func CreateProgram(Id uint32) *Program {
@@ -79,11 +79,13 @@ func (p *Program) loadShader(loc string, shaderType uint32) error {
 }
 
 func (p *Program) Use() error {
-	if p.Id = 0 {
+	if p.Id == 0 {
 		return fmt.Errorf("Cannot use deleted program")
 	}
 
 	gl.UseProgram(p.Id)
+
+	return nil
 }
 
 func (p *Program) Release() {
@@ -91,11 +93,13 @@ func (p *Program) Release() {
 }
 
 func (p *Program) Link() error {
-	if p.Id = 0 {
+	if p.Id == 0 {
 		return fmt.Errorf("Cannot link deleted program")
 	}
 
 	gl.LinkProgram(p.Id)
+
+	return nil
 }
 
 func (p *Program) Delete() {
@@ -137,14 +141,20 @@ func (p *Program) UpdateUniforms() error {
 	return nil
 }
 
-func (p *Program) AttachAttribute(n string) error {
-	attrib := gl.GetAttribLocation(p.Id, gl.Str(n+"\x00"))
+func (p *Program) AttachAttribute(n string, size int32) error {
+	attrib := uint32(gl.GetAttribLocation(p.Id, gl.Str(n+"\x00")))
 
-	if attrib == -1 {
+	// basically uint32(-1)
+	if attrib > 100000 {
 		return fmt.Errorf("Unable to find attribute: %s", n)
 	}
 
 	p.attributes[n] = attrib
+
+	if err := p.EnableAttribute(n); err != nil {
+		return err
+	}
+	gl.VertexAttribPointer(attrib, size, gl.FLOAT, false, 0, nil)
 
 	return nil
 }

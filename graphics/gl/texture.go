@@ -1,4 +1,4 @@
-package opengl
+package gl
 
 import (
 	"fmt"
