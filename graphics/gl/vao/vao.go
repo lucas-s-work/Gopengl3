@@ -102,6 +102,13 @@ func (vao *VAO) Shader() *shader.Program {
 	return vao.shader
 }
 
+func (vao *VAO) Delete() {
+	for _, b := range vao.buffers {
+		b.Delete()
+	}
+	vao.texture.Delete()
+}
+
 func (vao *VAO) Render() {
 	vao.shader.Use()
 	vao.Bind()

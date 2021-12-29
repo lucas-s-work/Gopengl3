@@ -44,10 +44,6 @@ type Texture struct {
 	textureUnit uint32
 }
 
-/*
-Loads a texture, does not reload it if already created
-*/
-
 func LoadTexture(file string) *Texture {
 	// Load existing texture
 	existingTex := FindTex(file)
@@ -120,21 +116,18 @@ func FindTex(file string) *Texture {
 	return nil
 }
 
-/*
-Texture usage methods
-*/
-
 func (t *Texture) Use() {
 	gl.ActiveTexture(t.textureUnit)
 	gl.BindTexture(gl.TEXTURE_2D, t.id)
 }
 
-// NormCoords ... normalize pixture texture coordinates
+func (t *Texture) Delete() {
+	gl.DeleteTextures(1, &t.id)
+}
+
 func (t *Texture) PixToTex(x, y int) (float32, float32) {
 	return float32(x) / float32(t.width), float32(y) / float32(t.height)
 }
-
-// Util
 
 func currentTextureUnit() uint32 {
 	if textureUnitUsed > textureIdsBeforeChange {
