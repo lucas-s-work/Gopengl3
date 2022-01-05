@@ -13,6 +13,10 @@ func init() {
 }
 
 func main() {
+	setupOpengl()
+}
+
+func setupOpengl() {
 	window, err := gl.CreateWindow(800, 600, "test")
 	if err != nil {
 		panic(err)

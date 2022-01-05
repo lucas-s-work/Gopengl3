@@ -1,15 +1,20 @@
 package graphics
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	ggl "github.com/lucas-s-work/gopengl3/graphics/gl"
 )
 
+const (
+	maxJobs = 256 // Maximum number of render jobs queued per frame
+)
+
 type Context struct {
 	renderers map[int][]Renderer
-	jobs      []func()
+	jobs      chan func()
 	layers    []int
 	sync      chan struct{}
 	window    *ggl.Window
@@ -19,7 +24,7 @@ type Context struct {
 func CreateContext(window *ggl.Window) *Context {
 	ctx := &Context{
 		renderers: make(map[int][]Renderer),
-		jobs:      []func(){},
+		jobs:      make(chan func(), maxJobs),
 		layers:    []int{},
 		window:    window,
 		sync:      make(chan struct{}),
@@ -62,22 +67,31 @@ func (ctx *Context) Delete() {
 		}
 	}
 
-	ctx.renderers = map[int][]Renderer{}
-	ctx.layers = []int{}
-	ctx.jobs = []func(){}
+	ctx.renderers = nil
+	ctx.layers = nil
+	ctx.jobs = nil
 }
 
-func (ctx *Context) AddJob(job func()) {
-	ctx.jobs = append(ctx.jobs, job)
+func (ctx *Context) AddJob(job func()) error {
+	select {
+	case ctx.jobs <- job:
+		return nil
+	default:
+		return fmt.Errorf("Unable to place render job, queue size: %v full", maxJobs)
+	}
 }
 
 func (ctx *Context) executeJobs() {
 	if ctx.useSync {
 		<-ctx.sync
-		for _, j := range ctx.jobs {
-			j()
+		for {
+			select {
+			case j := <-ctx.jobs:
+				j()
+			default:
+				break
+			}
 		}
-		ctx.jobs = []func(){}
 	}
 }
 
