@@ -7,16 +7,19 @@ import (
 	"github.com/lucas-s-work/gopengl3/graphics"
 	ggl "github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/gl/shader"
+	"github.com/lucas-s-work/gopengl3/util"
 )
 
 type Renderer2D struct {
 	*graphics.BaseRenderer
-	vertIndex int
+	vertIndex      int
+	vertAssignment util.CompressedList
 }
 
 func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *shader.Program) (*Renderer2D, error) {
 	b, err := graphics.CreateBaseRenderer(window, texture, shader)
 	if err != nil {
+		b.Delete()
 		return nil, err
 	}
 
@@ -24,8 +27,15 @@ func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *sh
 	v.AttachBuffer("vert", size)
 	v.AttachBuffer("verttexcoord", size)
 
+	assignments, err := util.CreateCompressedList(int(size))
+	if err != nil {
+		b.Delete()
+		return nil, err
+	}
+
 	return &Renderer2D{
-		BaseRenderer: b,
+		BaseRenderer:   b,
+		vertAssignment: *assignments,
 	}, nil
 }
 
@@ -44,23 +54,57 @@ func (r Renderer2D) SetAttributeValues(attribute string, vertices []mgl32.Vec2, 
 	return nil
 }
 
-func (r Renderer2D) SetVertices(verts []mgl32.Vec2, texs []mgl32.Vec2, index int) error {
+func (r Renderer2D) AllocateVertices(size int) (*util.ListNode, error) {
+	n, err := r.vertAssignment.Allocate(size)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to allocate: %v vertices :%w", size, err)
+	}
+
+	return n, nil
+}
+
+func (r Renderer2D) SetVertices(verts []mgl32.Vec2, texs []mgl32.Vec2, node *util.ListNode) error {
+	if node == nil {
+		return fmt.Errorf("node is nil")
+	}
+
 	if len(verts) != len(texs) {
 		return fmt.Errorf("Cannot set vertices, mismatched vertex and texture array dimensions")
 	}
 
-	if err := r.SetAttributeValues("vert", verts, index); err != nil {
+	if len(verts) > node.Size() {
+		return fmt.Errorf("Cannot set more vertices than allocated")
+	}
+
+	if err := r.SetAttributeValues("vert", verts, node.Index()); err != nil {
 		return err
 	}
-	return r.SetAttributeValues("verttexcoord", texs, index)
+	return r.SetAttributeValues("verttexcoord", texs, node.Index())
 }
 
-func (r Renderer2D) ClearVertices(index, size int) error {
-	if index < 0 || size < 0 {
-		return fmt.Errorf("invalid arguements given, < 0")
+func (r Renderer2D) SetSubVertices(verts []mgl32.Vec2, texs []mgl32.Vec2, node *util.ListNode, subIndex int) error {
+	if node == nil {
+		return fmt.Errorf("node is nil")
 	}
 
-	// TODO use a linked list to compress which set of coordinates are currently in use and which arent
+	if len(verts) != len(texs) {
+		return fmt.Errorf("Cannot set subvertices vertices, mismatched vertex and texture array dimensions")
+	}
 
-	return r.SetVertices(make([]mgl32.Vec2, size), make([]mgl32.Vec2, size), index)
+	if len(verts)+subIndex > node.Size() {
+		return fmt.Errorf("Cannot set subvertices, more vertices than allocated when including subIndex")
+	}
+
+	if err := r.SetAttributeValues("vert", verts, node.Index()+subIndex); err != nil {
+		return err
+	}
+	return r.SetAttributeValues("verttexcoord", texs, node.Index()+subIndex)
+}
+
+func (r Renderer2D) ClearVertices(node *util.ListNode) error {
+	if node == nil {
+		return fmt.Errorf("node is nil")
+	}
+
+	return r.SetVertices(make([]mgl32.Vec2, node.Size()), make([]mgl32.Vec2, node.Size()), node)
 }

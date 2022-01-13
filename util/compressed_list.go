@@ -47,6 +47,27 @@ func CreateCompressedList(length int) (*CompressedList, error) {
 	}, nil
 }
 
+func (c *CompressedList) Append(size int) {
+	c.length += size
+	// If the list only contains a single node then just extend the size
+	if c.startNode.prevNode == c.startNode {
+		return
+	}
+
+	// Else create a new node containing the new space
+	freeNode := &ListNode{
+		nextNode:  c.startNode,
+		prevNode:  c.startNode.prevNode,
+		size:      size,
+		index:     c.length - size,
+		id:        c.currID,
+		allocated: false,
+	}
+
+	c.currID++
+	c.startNode.prevNode.nextNode = freeNode
+}
+
 func (c *CompressedList) Allocate(size int) (*ListNode, error) {
 	if size > c.length {
 		return nil, fmt.Errorf("cannot allocate for size: %v greater than length: %v", size, c.length)
