@@ -31,7 +31,9 @@ func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32)
 	}
 
 	t := mgl32.Vec2{}
-	p.AttachUniform("trans", t)
+	if err := p.AttachUniform("trans", t); err != nil {
+		return nil, err
+	}
 
 	r, err := CreateRenderer2D(window, texture, size, p)
 	if err != nil {

@@ -8,5 +8,5 @@ out vec2 fragtexcoord;
 
 void main() {
     fragtexcoord = verttexcoord;
-    gl_Position = vec4(vert, 0., 1.);
+    gl_Position = vec4(vert + trans, 0., 1.);
 }

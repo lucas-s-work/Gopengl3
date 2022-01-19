@@ -115,8 +115,13 @@ func (p *Program) AttachUniform(name string, value interface{}) error {
 		return fmt.Errorf("Uniform with name: %s already attached", name)
 	}
 
+	loc := gl.GetUniformLocation(p.Id, gl.Str(name+"\x00"))
+	if loc == -1 {
+		return fmt.Errorf("Uniform with name: %s does not exist", name)
+	}
+
 	u := Uniform{
-		gl.GetUniformLocation(p.Id, gl.Str(name+"\x00")),
+		loc,
 		value,
 		true,
 	}
@@ -127,7 +132,6 @@ func (p *Program) AttachUniform(name string, value interface{}) error {
 	if err := u.Update(); err != nil {
 		return err
 	}
-	p.Release()
 
 	return nil
 }
@@ -139,7 +143,6 @@ func (p *Program) UpdateUniforms() error {
 			return err
 		}
 	}
-	p.Release()
 
 	return nil
 }
