@@ -41,7 +41,20 @@ func setupOpengl() {
 	if err != nil {
 		panic(err)
 	}
-	sqrV, sqrT, err := graphics.Rectangle(0, 0, 800, 64, 0, 0, 2, 1, r.Texture(), window)
+	sqrV, sqrT, err := graphics.Rectangle(32, 32, 64, 64, 0, 0, 2, 1, r.Texture(), window)
+
+	if err != nil {
+		panic(err)
+	}
+	err = r.SetVertices(sqrV, sqrT, allocation)
+	if err != nil {
+		panic(err)
+	}
+	allocation, err = r.AllocateVertices(6)
+	if err != nil {
+		panic(err)
+	}
+	sqrV, sqrT, err = graphics.Rectangle(128, 32, 64, 64, 0, 0, 2, 1, r.Texture(), window)
 
 	if err != nil {
 		panic(err)
