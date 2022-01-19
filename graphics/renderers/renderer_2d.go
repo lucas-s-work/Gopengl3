@@ -25,18 +25,20 @@ func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *sh
 
 	v := b.VAO()
 
-	err = v.AttachBuffer("verttexcoord", size)
+	floatNum := size * 2
+
+	err = v.AttachBuffer("verttexcoord", floatNum)
 	if err != nil {
 		b.Delete()
 		return nil, err
 	}
-	err = v.AttachBuffer("vert", size)
+	err = v.AttachBuffer("vert", floatNum)
 	if err != nil {
 		b.Delete()
 		return nil, err
 	}
 
-	assignments, err := util.CreateCompressedList(int(size))
+	assignments, err := util.CreateCompressedList(int(floatNum))
 	if err != nil {
 		b.Delete()
 		return nil, err
@@ -56,7 +58,7 @@ func (r Renderer2D) SetAttributeValues(attribute string, vertices []mgl32.Vec2, 
 		elems[2*i+1] = v.Y()
 	}
 
-	if err := r.VAO().SetBufferIndex(attribute, elems, index); err != nil {
+	if err := r.VAO().SetBufferIndex(attribute, elems, 2*index); err != nil {
 		return err
 	}
 
