@@ -48,6 +48,7 @@ func (p *Program) LoadShader(loc string, shaderType uint32) error {
 	}
 
 	shaderString, err := util.ReadFile(loc)
+
 	if err != nil {
 		return err
 	}
@@ -144,12 +145,13 @@ func (p *Program) UpdateUniforms() error {
 }
 
 func (p *Program) AttachAttribute(n string, size int32) error {
-	attrib := uint32(gl.GetAttribLocation(p.Id, gl.Str(n+"\x00")))
+	attribRaw := gl.GetAttribLocation(p.Id, gl.Str(n+"\x00"))
 
-	// basically uint32(-1)
-	if attrib > 100000 {
+	if attribRaw == -1 {
 		return fmt.Errorf("Unable to find attribute: %s", n)
 	}
+
+	attrib := uint32(attribRaw)
 
 	p.attributes[n] = attrib
 

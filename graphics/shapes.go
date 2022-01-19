@@ -16,9 +16,11 @@ func Rectangle(x, y, width, height, texX, texY, texWidth, texHeight int, texture
 	texs := make([]mgl32.Vec2, 6)
 
 	sX, sY := window.PixToScreen(x, y)
-	sWidth, sHeight := window.PixToScreen(width, height)
+	sWidth := 2 * float32(width) / window.Width
+	sHeight := 2 * float32(height) / window.Height
 	tX, tY := texture.PixToTex(texX, texY)
-	tWidth, tHeight := texture.PixToTex(texWidth, texHeight)
+	tWidth := float32(texWidth) / float32(texture.Width)
+	tHeight := float32(texHeight) / float32(texture.Height)
 
 	/*
 		We add height to the vertices in the complement of when we add height to the texs

@@ -24,8 +24,17 @@ func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *sh
 	}
 
 	v := b.VAO()
-	v.AttachBuffer("vert", size)
-	v.AttachBuffer("verttexcoord", size)
+
+	err = v.AttachBuffer("verttexcoord", size)
+	if err != nil {
+		b.Delete()
+		return nil, err
+	}
+	err = v.AttachBuffer("vert", size)
+	if err != nil {
+		b.Delete()
+		return nil, err
+	}
 
 	assignments, err := util.CreateCompressedList(int(size))
 	if err != nil {

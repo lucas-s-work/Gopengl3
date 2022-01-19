@@ -8,6 +8,8 @@ import (
 
 type Renderer interface {
 	VAO() *vao.VAO
+	Texture() *gl.Texture
+	Update()
 	Delete()
 	Render()
 }
@@ -35,6 +37,10 @@ func (r BaseRenderer) VAO() *vao.VAO {
 	return r.vao
 }
 
+func (r BaseRenderer) Update() {
+	r.VAO().UpdateBuffers()
+}
+
 func (r BaseRenderer) Delete() {
 	r.vao.Delete()
 	r.shader.Delete()
@@ -42,4 +48,8 @@ func (r BaseRenderer) Delete() {
 
 func (r BaseRenderer) Render() {
 	r.vao.Render()
+}
+
+func (r BaseRenderer) Texture() *gl.Texture {
+	return r.VAO().Texture()
 }

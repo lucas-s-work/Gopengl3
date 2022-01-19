@@ -43,10 +43,6 @@ func (vao *VAO) AttachBuffer(attribute string, size int32) error {
 		return fmt.Errorf("Unable to attach buffer, already attached with attribute: %s", attribute)
 	}
 
-	if n := vao.vertNum; n > 0 && n != size {
-		return fmt.Errorf("Unable to attach buffer, size mismatch expected: %v", n)
-	}
-
 	vao.Bind()
 
 	b, err := CreateBuffer(attribute, int(size), vao.shader)
@@ -54,7 +50,7 @@ func (vao *VAO) AttachBuffer(attribute string, size int32) error {
 		return err
 	}
 
-	vao.vertNum = size
+	vao.vertNum = size / 2
 	vao.buffers[attribute] = b
 
 	return nil
@@ -98,8 +94,28 @@ func (vao *VAO) SetBufferIndex(attribute string, elems []float32, index int) err
 	return nil
 }
 
+func (vao *VAO) UpdateBuffers() {
+	for _, b := range vao.buffers {
+		b.Update()
+	}
+}
+
+func (vao *VAO) UpdateBuffer(buffer string) error {
+	if b, ok := vao.buffers[buffer]; !ok {
+		return fmt.Errorf("Cannot update buffer: %s, does not exist", buffer)
+	} else {
+		b.Update()
+	}
+
+	return nil
+}
+
 func (vao *VAO) Shader() *shader.Program {
 	return vao.shader
+}
+
+func (vao *VAO) Texture() *ggl.Texture {
+	return vao.texture
 }
 
 func (vao *VAO) Delete() {

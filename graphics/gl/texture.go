@@ -38,8 +38,8 @@ const textureIdsBeforeChange = 32
 
 type Texture struct {
 	id          uint32
-	width       int
-	height      int
+	Width       int
+	Height      int
 	file        string
 	textureUnit uint32
 }
@@ -126,7 +126,7 @@ func (t *Texture) Delete() {
 }
 
 func (t *Texture) PixToTex(x, y int) (float32, float32) {
-	return float32(x) / float32(t.width), float32(y) / float32(t.height)
+	return float32(x) / float32(t.Width), float32(y) / float32(t.Height)
 }
 
 func currentTextureUnit() uint32 {

@@ -21,7 +21,7 @@ func CreateBuffer(attribute string, size int, shader *shader.Program) (*Buffer, 
 
 	gl.GenBuffers(1, &buffer.id)
 	gl.BindBuffer(gl.ARRAY_BUFFER, buffer.id)
-	gl.BufferData(gl.ARRAY_BUFFER, 2*size, gl.Ptr(buffer.elements), gl.DYNAMIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*size, gl.Ptr(buffer.elements), gl.DYNAMIC_DRAW)
 
 	if err := shader.AttachAttribute(attribute, 2); err != nil {
 		buffer.Delete()
@@ -34,7 +34,7 @@ func CreateBuffer(attribute string, size int, shader *shader.Program) (*Buffer, 
 
 func (buffer *Buffer) Update() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, buffer.id)
-	gl.BufferSubData(gl.ARRAY_BUFFER, 0, 2*buffer.size, gl.Ptr(buffer.elements))
+	gl.BufferSubData(gl.ARRAY_BUFFER, 0, 4*buffer.size, gl.Ptr(buffer.elements))
 }
 
 func (buffer *Buffer) Delete() {

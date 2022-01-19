@@ -38,10 +38,6 @@ func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32)
 		return nil, err
 	}
 
-	v := r.VAO()
-	v.AttachBuffer("vert", size)
-	v.AttachBuffer("verttexcoord", size)
-
 	return &Translational{
 		Renderer2D:  r,
 		shader:      p,
