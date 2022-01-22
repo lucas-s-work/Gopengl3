@@ -125,10 +125,14 @@ func (vao *VAO) Delete() {
 	vao.texture.Delete()
 }
 
-func (vao *VAO) Render() {
+func (vao *VAO) PrepRender() {
 	vao.shader.Use()
 	vao.Bind()
 	vao.texture.Use()
 	vao.shader.UpdateUniforms()
+}
+
+func (vao *VAO) Render() {
+	vao.PrepRender()
 	gl.DrawArrays(gl.TRIANGLES, 0, vao.vertNum)
 }

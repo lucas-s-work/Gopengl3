@@ -12,6 +12,10 @@ const (
 	fragShader = "./shaders/translational/frag.frag"
 )
 
+const (
+	tranlsationUniform = "trans"
+)
+
 type Translational struct {
 	*Renderer2D
 	shader      *shader.Program
@@ -31,7 +35,7 @@ func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32)
 	}
 
 	t := mgl32.Vec2{}
-	if err := p.AttachUniform("trans", t); err != nil {
+	if err := p.AttachUniform(tranlsationUniform, t); err != nil {
 		return nil, err
 	}
 
@@ -45,4 +49,8 @@ func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32)
 		shader:      p,
 		Translation: &t,
 	}, nil
+}
+
+func (t *Translational) SetTranslation(translation mgl32.Vec2) {
+	t.shader.SetUniform(tranlsationUniform, translation)
 }

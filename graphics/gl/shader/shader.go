@@ -136,6 +136,17 @@ func (p *Program) AttachUniform(name string, value interface{}) error {
 	return nil
 }
 
+func (p *Program) SetUniform(name string, value interface{}) error {
+	if u, ok := p.uniforms[name]; ok {
+		p.uniforms[name].value = value
+		u.Set(value)
+	} else {
+		return fmt.Errorf("No uniform attached with name: %s", name)
+	}
+
+	return nil
+}
+
 func (p *Program) UpdateUniforms() error {
 	p.Use()
 	for _, u := range p.uniforms {

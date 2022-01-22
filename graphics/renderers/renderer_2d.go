@@ -65,6 +65,24 @@ func (r Renderer2D) SetAttributeValues(attribute string, vertices []mgl32.Vec2, 
 	return nil
 }
 
+func (r Renderer2D) AllocateAndSetVertices(verts []mgl32.Vec2, texs []mgl32.Vec2) (*util.ListNode, error) {
+	if len(verts) != len(texs) {
+		return nil, fmt.Errorf("Unable to allocate and set, vertex and texture coords lengths don't match")
+	}
+
+	allocation, err := r.AllocateVertices(len(verts))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.SetVertices(verts, texs, allocation); err != nil {
+		allocation.Free()
+		return nil, err
+	}
+
+	return allocation, nil
+}
+
 func (r Renderer2D) AllocateVertices(size int) (*util.ListNode, error) {
 	n, err := r.vertAssignment.Allocate(size)
 	if err != nil {
