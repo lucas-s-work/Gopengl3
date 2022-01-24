@@ -1,6 +1,8 @@
 package renderers
 
 import (
+	"sync"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	ggl "github.com/lucas-s-work/gopengl3/graphics/gl"
@@ -20,6 +22,7 @@ type Translational struct {
 	*Renderer2D
 	shader      *shader.Program
 	Translation *mgl32.Vec2
+	tMut        sync.Mutex
 }
 
 func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32) (*Translational, error) {

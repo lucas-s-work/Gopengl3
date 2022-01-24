@@ -3,6 +3,7 @@ package shader
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/lucas-s-work/gopengl3/util"
@@ -16,6 +17,7 @@ type Program struct {
 	Id         uint32
 	uniforms   map[string]*Uniform
 	attributes map[string]uint32
+	lock       sync.Mutex
 }
 
 func CreateProgram(Id uint32) *Program {
@@ -110,7 +112,17 @@ func (p *Program) Delete() {
 	p.Id = 0
 }
 
+func (p *Program) Lock() {
+	p.lock.Lock()
+}
+
+func (p *Program) Unlock() {
+	p.lock.Unlock()
+}
+
 func (p *Program) AttachUniform(name string, value interface{}) error {
+	p.Lock()
+	defer p.Unlock()
 	if _, ok := p.uniforms[name]; ok {
 		return fmt.Errorf("Uniform with name: %s already attached", name)
 	}
@@ -137,6 +149,8 @@ func (p *Program) AttachUniform(name string, value interface{}) error {
 }
 
 func (p *Program) SetUniform(name string, value interface{}) error {
+	p.Lock()
+	defer p.Unlock()
 	if u, ok := p.uniforms[name]; ok {
 		p.uniforms[name].value = value
 		u.Set(value)
@@ -148,9 +162,12 @@ func (p *Program) SetUniform(name string, value interface{}) error {
 }
 
 func (p *Program) UpdateUniforms() error {
+	p.Lock()
+	defer p.Unlock()
 	p.Use()
 	for _, u := range p.uniforms {
 		if err := u.Update(); err != nil {
+
 			return err
 		}
 	}
