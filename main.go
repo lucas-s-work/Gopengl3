@@ -3,7 +3,6 @@ package main
 import (
 	"runtime"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
@@ -31,27 +30,44 @@ func setupOpengl() {
 	ctx := graphics.CreateContext(window)
 	defer ctx.Delete()
 
-	r, err := renderers.CreateTranslationalRenderer(window, "./textures/test.png", 12)
-	if err != nil {
-		panic(err)
-	}
+	var r *renderers.Translational
+	ctx.AddJob(func() {
+		r, err = renderers.CreateTranslationalRenderer(window, "./textures/test.png", 12)
+		if err != nil {
+			panic(err)
+		}
 
-	ctx.Attach(r, 1)
+		v, t, err := graphics.Square(0, 0, 32, 0, 0, 1, r.Texture(), window)
+		if err != nil {
+			panic(err)
+		}
 
-	u, err := renderers.CreateTranslationalRenderer(window, "./textures/test.png", 12)
+		r.AllocateAndSetVertices(v, t)
+		r.Update()
+		ctx.Attach(r, 0)
+	})
 
-	ctx.Attach(u, 0)
-
-	verts, texs, _ := graphics.Square(0, 0, 32, 0, 0, 1, r.Texture(), window)
-	r.AllocateAndSetVertices(verts, texs)
-	verts, texs, _ = graphics.Square(0, 0, 32, 1, 0, 1, u.Texture(), window)
-	u.AllocateAndSetVertices(verts, texs)
-	u.SetTranslation(mgl32.Vec2{0.02, 0})
-
-	r.Update()
-	u.Update()
+	doneChan := start(window, ctx)
 
 	for !window.ShouldClose() {
 		ctx.Render()
 	}
+
+	doneChan <- struct{}{}
+}
+
+func start(window *gl.Window, ctx *graphics.Context) chan<- struct{} {
+	doneChan := make(chan struct{})
+	ctxSync := ctx.GetSync()
+	go func() {
+		for {
+			select {
+			case <-doneChan:
+				return
+			case ctxSync <- struct{}{}:
+			}
+		}
+	}()
+
+	return doneChan
 }

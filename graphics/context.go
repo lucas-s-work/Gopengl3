@@ -89,7 +89,7 @@ func (ctx *Context) executeJobs() {
 			case j := <-ctx.jobs:
 				j()
 			default:
-				break
+				return
 			}
 		}
 	}
