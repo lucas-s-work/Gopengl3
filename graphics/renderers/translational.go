@@ -10,11 +10,12 @@ import (
 )
 
 const (
-	vertShader = "./shaders/translational/vertex.vert"
-	fragShader = "./shaders/translational/frag.frag"
+	translationVertShader = "./shaders/translational/vertex.vert"
+	translationFragShader = "./shaders/translational/frag.frag"
 )
 
 const (
+	dimensionUniform   = "dimension"
 	tranlsationUniform = "trans"
 )
 
@@ -27,10 +28,10 @@ type Translational struct {
 
 func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32) (*Translational, error) {
 	p := shader.CreateProgram(0)
-	if err := p.LoadShader(vertShader, gl.VERTEX_SHADER); err != nil {
+	if err := p.LoadShader(translationVertShader, gl.VERTEX_SHADER); err != nil {
 		return nil, err
 	}
-	if err := p.LoadShader(fragShader, gl.FRAGMENT_SHADER); err != nil {
+	if err := p.LoadShader(translationFragShader, gl.FRAGMENT_SHADER); err != nil {
 		return nil, err
 	}
 	if err := p.Link(); err != nil {

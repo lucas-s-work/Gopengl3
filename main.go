@@ -3,6 +3,7 @@ package main
 import (
 	"runtime"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lucas-s-work/gopengl3/graphics"
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 	"github.com/lucas-s-work/gopengl3/graphics/renderers"
@@ -30,19 +31,21 @@ func setupOpengl() {
 	ctx := graphics.CreateContext(window)
 	defer ctx.Delete()
 
-	var r *renderers.Translational
+	var r *renderers.Rotational
 	ctx.AddJob(func() {
-		r, err = renderers.CreateTranslationalRenderer(window, "./textures/test.png", 12)
+		r, err = renderers.CreateRotationalRenderer(window, "./textures/test.png", 12)
 		if err != nil {
 			panic(err)
 		}
 
-		v, t, err := graphics.Square(0, 0, 32, 0, 0, 1, r.Texture(), window)
+		v, t, err := graphics.Square(0, 0, 32, 0, 0, 1, r.Texture())
 		if err != nil {
 			panic(err)
 		}
 
 		r.AllocateAndSetVertices(v, t)
+		r.SetTranslation(mgl32.Vec2{300, 300})
+		r.SetRotation1(0.5, mgl32.Vec2{300, 300})
 		r.Update()
 		ctx.Attach(r, 0)
 	})

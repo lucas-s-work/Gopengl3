@@ -7,7 +7,7 @@ import (
 	"github.com/lucas-s-work/gopengl3/graphics/gl"
 )
 
-func Rectangle(x, y, width, height, texX, texY, texWidth, texHeight int, texture *gl.Texture, window *gl.Window) ([]mgl32.Vec2, []mgl32.Vec2, error) {
+func Rectangle(x, y, width, height float32, texX, texY, texWidth, texHeight int, texture *gl.Texture) ([]mgl32.Vec2, []mgl32.Vec2, error) {
 	if texX < 0 || texY < 0 || texX > texWidth || texY > texHeight {
 		return nil, nil, fmt.Errorf("cannot create recangle, invalid texture coordinates")
 	}
@@ -15,9 +15,6 @@ func Rectangle(x, y, width, height, texX, texY, texWidth, texHeight int, texture
 	vertices := make([]mgl32.Vec2, 6)
 	texs := make([]mgl32.Vec2, 6)
 
-	sX, sY := window.PixToScreen(x, y)
-	sWidth := 2 * float32(width) / window.Width
-	sHeight := 2 * float32(height) / window.Height
 	tX, tY := texture.PixToTex(texX, texY)
 	tWidth := float32(texWidth) / float32(texture.Width)
 	tHeight := float32(texHeight) / float32(texture.Height)
@@ -30,34 +27,34 @@ func Rectangle(x, y, width, height, texX, texY, texWidth, texHeight int, texture
 	// Upper left triangle
 
 	// Top left
-	vertices[0] = mgl32.Vec2{sX, sY + sHeight}
+	vertices[0] = mgl32.Vec2{x, y + height}
 	texs[0] = mgl32.Vec2{tX, tY}
 
 	// Top right
-	vertices[1] = mgl32.Vec2{sX + sWidth, sY + sHeight}
+	vertices[1] = mgl32.Vec2{x + width, y + height}
 	texs[1] = mgl32.Vec2{tX + tWidth, tY}
 
 	// Bottom Left
-	vertices[2] = mgl32.Vec2{sX, sY}
+	vertices[2] = mgl32.Vec2{x, y}
 	texs[2] = mgl32.Vec2{tX, tY + tHeight}
 
 	// Lower right triangle
 
 	// Bottom Left
-	vertices[3] = mgl32.Vec2{sX, sY}
+	vertices[3] = mgl32.Vec2{x, y}
 	texs[3] = mgl32.Vec2{tX, tY + tHeight}
 
 	// Top right
-	vertices[4] = mgl32.Vec2{sX + sWidth, sY + sHeight}
+	vertices[4] = mgl32.Vec2{x + width, y + height}
 	texs[4] = mgl32.Vec2{tX + tWidth, tY}
 
 	// Bottom right
-	vertices[5] = mgl32.Vec2{sX + sWidth, sY}
+	vertices[5] = mgl32.Vec2{x + width, y}
 	texs[5] = mgl32.Vec2{tX + tWidth, tY + tHeight}
 
 	return vertices, texs, nil
 }
 
-func Square(x, y, width, tX, tY, tWidth int, texture *gl.Texture, window *gl.Window) ([]mgl32.Vec2, []mgl32.Vec2, error) {
-	return Rectangle(x, y, width, width, tX, tY, tWidth, tWidth, texture, window)
+func Square(x, y, width float32, tX, tY, tWidth int, texture *gl.Texture) ([]mgl32.Vec2, []mgl32.Vec2, error) {
+	return Rectangle(x, y, width, width, tX, tY, tWidth, tWidth, texture)
 }
