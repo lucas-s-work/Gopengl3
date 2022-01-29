@@ -84,11 +84,12 @@ func (ctx *Context) AddJob(job func()) error {
 func (ctx *Context) executeJobs() {
 	if ctx.useSync {
 		for {
+			shouldReturn := false
 			select {
 			case j := <-ctx.jobs:
 				j()
 			default:
-				return
+				shouldReturn = true
 			}
 
 			// We wait for the context sync *After* performing the jobs
@@ -97,6 +98,9 @@ func (ctx *Context) executeJobs() {
 			// before executing anything, this allows any initialization logic
 			// To occur pre tick
 			<-ctx.sync
+			if shouldReturn {
+				return
+			}
 		}
 	}
 }
