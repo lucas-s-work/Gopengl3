@@ -31,9 +31,9 @@ func setupOpengl() {
 	ctx := graphics.CreateContext(window)
 	defer ctx.Delete()
 
-	var r *renderers.Rotational
+	var r *renderers.Translational
 	ctx.AddJob(func() {
-		r, err = renderers.CreateRotationalRenderer(window, "./textures/test.png", 12)
+		r, err = renderers.CreateTranslationalRenderer(window, "./textures/test.png", 12)
 		if err != nil {
 			panic(err)
 		}
@@ -45,7 +45,7 @@ func setupOpengl() {
 
 		r.AllocateAndSetVertices(v, t)
 		r.SetTranslation(mgl32.Vec2{300, 300})
-		r.SetRotation1(0.5, mgl32.Vec2{300, 300})
+		// r.SetRotation1(0.5, mgl32.Vec2{300, 300})
 		r.Update()
 		ctx.Attach(r, 0)
 	})

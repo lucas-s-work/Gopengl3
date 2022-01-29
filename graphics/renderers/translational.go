@@ -42,6 +42,9 @@ func CreateTranslationalRenderer(window *ggl.Window, texture string, size int32)
 	if err := p.AttachUniform(tranlsationUniform, t); err != nil {
 		return nil, err
 	}
+	if err := p.AttachUniform(dimensionUniform, mgl32.Vec2{window.Width, window.Height}); err != nil {
+		return nil, err
+	}
 
 	r, err := CreateRenderer2D(window, texture, size, p)
 	if err != nil {
