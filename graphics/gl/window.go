@@ -52,6 +52,7 @@ func (w *Window) SwapBuffers() {
 
 func (w *Window) PollInput() {
 	glfw.PollEvents()
+	updateKeys(w.glWindow)
 }
 
 func (w *Window) ShouldClose() bool {
