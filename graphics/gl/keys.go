@@ -33,6 +33,18 @@ func CheckKey(key string) bool {
 	return keyMap[key]
 }
 
+func CheckKeys(keys []string) []bool {
+	keyMut.Lock()
+	defer keyMut.Unlock()
+
+	out := make([]bool, len(keys))
+	for i, k := range keys {
+		out[i] = keyMap[k]
+	}
+
+	return out
+}
+
 func CheckKeyCombo(keys []string) bool {
 	keyMut.Lock()
 	defer keyMut.Unlock()
