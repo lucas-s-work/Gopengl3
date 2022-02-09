@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	keyMap map[string]bool
-	keyMut sync.Mutex
+	keyMap = map[string]bool{}
+	keyMut = sync.Mutex{}
 )
 
 func updateKeys(window *glfw.Window) {
