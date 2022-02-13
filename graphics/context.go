@@ -45,14 +45,36 @@ func (ctx *Context) Attach(renderer Renderer, layer int) {
 		}
 	}
 
+	renderer.SetLayer(layer)
+
 	if !layerExist {
 		ctx.layers = append(ctx.layers, layer)
+		renderer.SetId(0)
 		ctx.renderers[layer] = []Renderer{renderer}
 	} else {
-		ctx.renderers[layer] = append(ctx.renderers[layer], renderer)
+		indexFound := false
+		for i, r := range ctx.renderers[layer] {
+			if r == nil {
+				renderer.SetId(i)
+				ctx.renderers[layer][i] = renderer
+				indexFound = true
+
+				break
+			}
+		}
+
+		if !indexFound {
+			renderer.SetId(len(ctx.renderers[layer]))
+			ctx.renderers[layer] = append(ctx.renderers[layer], renderer)
+		}
 	}
 
 	sort.Ints(ctx.layers)
+}
+
+func (ctx *Context) Detach(renderer Renderer) {
+	ctx.renderers[renderer.GetLayer()][renderer.GetId()] = nil
+	renderer.Delete()
 }
 
 func (ctx *Context) GetSync() chan<- struct{} {
@@ -117,7 +139,9 @@ func (ctx *Context) Render() {
 
 	for _, l := range ctx.layers {
 		for _, r := range ctx.renderers[l] {
-			r.Render()
+			if r != nil {
+				r.Render()
+			}
 		}
 	}
 

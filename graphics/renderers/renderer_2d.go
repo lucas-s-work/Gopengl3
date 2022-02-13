@@ -19,7 +19,6 @@ type Renderer2D struct {
 func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *shader.Program) (*Renderer2D, error) {
 	b, err := graphics.CreateBaseRenderer(window, texture, shader)
 	if err != nil {
-		b.Delete()
 		return nil, err
 	}
 

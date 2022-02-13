@@ -103,6 +103,7 @@ var (
 		glfw.KeyDown,
 		glfw.KeyRight,
 		glfw.KeyLeft,
+		glfw.KeySpace,
 	}
 
 	mouseButtons = []glfw.MouseButton{
