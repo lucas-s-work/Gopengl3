@@ -119,6 +119,7 @@ func (vao *VAO) Texture() *ggl.Texture {
 }
 
 func (vao *VAO) Delete() {
+	gl.DeleteVertexArrays(1, &vao.id)
 	for _, b := range vao.buffers {
 		b.Delete()
 	}

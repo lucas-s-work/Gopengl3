@@ -85,11 +85,15 @@ func (ctx *Context) executeJobs() {
 	if ctx.useSync {
 		for {
 			shouldReturn := false
-			select {
-			case j := <-ctx.jobs:
-				j()
-			default:
-				shouldReturn = true
+		loop:
+			for {
+				select {
+				case j := <-ctx.jobs:
+					j()
+				default:
+					shouldReturn = true
+					break loop
+				}
 			}
 
 			// We wait for the context sync *After* performing the jobs

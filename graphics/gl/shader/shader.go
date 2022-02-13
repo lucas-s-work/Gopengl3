@@ -18,6 +18,7 @@ type Program struct {
 	uniforms   map[string]*Uniform
 	attributes map[string]uint32
 	lock       sync.Mutex
+	deleted    bool
 }
 
 func CreateProgram(Id uint32) *Program {
@@ -109,6 +110,7 @@ func (p *Program) Link() error {
 
 func (p *Program) Delete() {
 	gl.DeleteProgram(p.Id)
+	p.deleted = true
 	p.Id = 0
 }
 
@@ -151,6 +153,11 @@ func (p *Program) AttachUniform(name string, value interface{}) error {
 func (p *Program) SetUniform(name string, value interface{}) error {
 	p.Lock()
 	defer p.Unlock()
+
+	if p.deleted {
+		return nil
+	}
+
 	if u, ok := p.uniforms[name]; ok {
 		p.uniforms[name].value = value
 		u.Set(value)
@@ -164,6 +171,11 @@ func (p *Program) SetUniform(name string, value interface{}) error {
 func (p *Program) UpdateUniforms() error {
 	p.Lock()
 	defer p.Unlock()
+
+	if p.deleted {
+		return nil
+	}
+
 	p.Use()
 	for _, u := range p.uniforms {
 		if err := u.Update(); err != nil {
