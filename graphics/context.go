@@ -94,6 +94,10 @@ func (ctx *Context) Delete() {
 	ctx.jobs = nil
 }
 
+func (ctx *Context) Window() *ggl.Window {
+	return ctx.window
+}
+
 func (ctx *Context) AddJob(job func()) error {
 	select {
 	case ctx.jobs <- job:

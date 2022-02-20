@@ -118,6 +118,10 @@ func (vao *VAO) Texture() *ggl.Texture {
 	return vao.texture
 }
 
+func (vao *VAO) SetTexture(t *ggl.Texture) {
+	vao.texture = t
+}
+
 func (vao *VAO) Delete() {
 	ggl.FreeVAOIID(vao.id)
 	vao.shader.Delete()

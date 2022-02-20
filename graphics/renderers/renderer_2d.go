@@ -133,6 +133,12 @@ func (r Renderer2D) ClearVertices(node *util.ListNode) error {
 	if node == nil {
 		return fmt.Errorf("node is nil")
 	}
+	err := r.SetVertices(make([]mgl32.Vec2, node.Size()), make([]mgl32.Vec2, node.Size()), node)
+	if err != nil {
+		return err
+	}
 
-	return r.SetVertices(make([]mgl32.Vec2, node.Size()), make([]mgl32.Vec2, node.Size()), node)
+	node.Free()
+
+	return nil
 }
