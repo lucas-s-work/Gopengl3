@@ -23,7 +23,6 @@ func CreateRenderer2D(window *ggl.Window, texture string, size int32, shader *sh
 	}
 
 	v := b.VAO()
-
 	floatNum := size * 2
 
 	err = v.AttachBuffer("verttexcoord", floatNum)

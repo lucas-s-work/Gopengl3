@@ -20,10 +20,7 @@ type VAO struct {
 func CreateVAO(window *ggl.Window, textureFile string, shader *shader.Program) (*VAO, error) {
 	texture := ggl.LoadTexture(textureFile)
 
-	id, err := ggl.GetFreeVAOIId()
-	if err != nil {
-		return nil, err
-	}
+	id := ggl.GetFreeVAOIId()
 
 	return &VAO{
 		id:      id,
@@ -36,6 +33,10 @@ func CreateVAO(window *ggl.Window, textureFile string, shader *shader.Program) (
 
 func (vao *VAO) Bind() {
 	gl.BindVertexArray(vao.id)
+}
+
+func (vao *VAO) UnBind() {
+	gl.BindVertexArray(0)
 }
 
 func (vao *VAO) AttachBuffer(attribute string, size int32) error {
@@ -123,11 +124,13 @@ func (vao *VAO) SetTexture(t *ggl.Texture) {
 }
 
 func (vao *VAO) Delete() {
-	ggl.FreeVAOIID(vao.id)
 	vao.shader.Delete()
 	for _, b := range vao.buffers {
 		b.Delete()
 	}
+	vao.UnBind()
+
+	ggl.FreeVAOIID(vao.id)
 }
 
 func (vao *VAO) PrepRender() {

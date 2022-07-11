@@ -1,8 +1,6 @@
 package renderers
 
 import (
-	"sync"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	ggl "github.com/lucas-s-work/gopengl3/graphics/gl"
@@ -17,12 +15,13 @@ const (
 const (
 	rotation1AngleUniform  = "rot1angle"
 	rotation1CenterUniform = "rot1center"
+	rotation2CenterUniform = "rot2center"
+	rotation2AngleUniform  = "rot2angle"
 )
 
 type Rotational struct {
 	*Renderer2D
 	shader *shader.Program
-	tMut   sync.Mutex
 }
 
 func CreateRotationalRenderer(window *ggl.Window, texture string, size int32) (*Rotational, error) {
@@ -53,6 +52,15 @@ func CreateRotationalRenderer(window *ggl.Window, texture string, size int32) (*
 		return nil, err
 	}
 
+	r2Center := mgl32.Vec2{}
+	if err := p.AttachUniform(rotation2CenterUniform, r2Center); err != nil {
+		return nil, err
+	}
+	var r2Angle float32 = 0
+	if err := p.AttachUniform(rotation2AngleUniform, r2Angle); err != nil {
+		return nil, err
+	}
+
 	r, err := CreateRenderer2D(window, texture, size, p)
 	if err != nil {
 		return nil, err
@@ -71,4 +79,9 @@ func (r *Rotational) SetTranslation(translation mgl32.Vec2) {
 func (r *Rotational) SetRotation1(angle float32, center mgl32.Vec2) {
 	r.shader.SetUniform(rotation1AngleUniform, angle)
 	r.shader.SetUniform(rotation1CenterUniform, center)
+}
+
+func (r *Rotational) SetRotation2(angle float32, center mgl32.Vec2) {
+	r.shader.SetUniform(rotation2AngleUniform, angle)
+	r.shader.SetUniform(rotation2CenterUniform, center)
 }

@@ -1,8 +1,6 @@
 package gl
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -20,28 +18,23 @@ func GlInit() error {
 		return err
 	}
 
-	gl.GenVertexArrays(MaxVAO, &vaoIDs[0])
-
 	return nil
 }
 
-func GetFreeVAOIId() (uint32, error) {
-	for i, used := range vaoUsed {
-		if !used {
-			vaoUsed[i] = true
-			return vaoIDs[i], nil
-		}
-	}
+func GetFreeVAOIId() (out uint32) {
+	gl.GenVertexArrays(1, &out)
 
-	return 0, fmt.Errorf("Unable to find free VAO ID")
+	return
+	// for i, used := range vaoUsed {
+	// 	if !used {
+	// 		vaoUsed[i] = true
+	// 		return vaoIDs[i], nil
+	// 	}
+	// }
+
+	// return 0, fmt.Errorf("Unable to find free VAO ID")
 }
 
-func FreeVAOIID(id uint32) error {
-	if !vaoUsed[id] {
-		return fmt.Errorf("Unable to free un-used VaoID: %v", id)
-	}
-
-	vaoUsed[id] = false
-
-	return nil
+func FreeVAOIID(id uint32) {
+	gl.DeleteVertexArrays(1, &id)
 }
